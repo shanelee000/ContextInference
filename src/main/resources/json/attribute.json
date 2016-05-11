@@ -1,0 +1,11 @@
+{
+  "light":["very bright", "bright", "normal", "dark", "very dark"],
+  "sound":["very loud", "loud", "normal", "quiet","very quiet"],
+  "temperature":["very hot", "hot", "normal", "cold", "very cold"],
+  "humidity":["high", "medium", "low"],
+  "position":["lying", "standing"],
+  "movement":["not moving", "moving", "moving fast"],
+//  "time":["morning", "afternoon", "night"],
+  "gps":["indoor", "outdoor"],
+  "result":["resting", "idle", "walking", "running"]
+}
