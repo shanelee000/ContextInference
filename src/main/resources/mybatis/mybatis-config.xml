@@ -16,10 +16,10 @@
 	</settings>
 	
 	<typeAliases>
-		<typeAlias type="com.shanelee.ContextInference.NaiveBayes.entity.AttributeEntity" alias="AttrubuteEntity"/>
+		<typeAlias type="com.shanelee.ContextInference.entity.AttributeEntity" alias="AttrubuteEntity"/>
 	</typeAliases>
 	<mappers>
-		<mapper resource="mybatis/NaiveBayes/AttributeMapper.xml"/>
+		<mapper resource="mybatis/AttributeMapper.xml"/>
 	</mappers>
 	
 </configuration>

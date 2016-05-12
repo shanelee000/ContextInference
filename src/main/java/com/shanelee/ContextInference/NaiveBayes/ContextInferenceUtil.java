@@ -1,9 +1,6 @@
-package com.shanelee.ContextInference.NaiveBayes.utils;
+package com.shanelee.ContextInference.NaiveBayes;
 
-import com.shanelee.ContextInference.NaiveBayes.dao.AttributeDao;
-import com.shanelee.ContextInference.NaiveBayes.entity.AttributeEntity;
-import org.omg.CORBA.PUBLIC_MEMBER;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.shanelee.ContextInference.entity.AttributeEntity;
 
 import java.util.*;
 
@@ -42,7 +39,7 @@ public class ContextInferenceUtil {
         buildHumidityMap(attrsOfRunning, "running");
         buildPositionMap(attrsOfRunning, "running");
         buildMovementMap(attrsOfRunning, "running");
-//        buildGpsMap(attrsOfRunning, "running");
+        buildGpsMap(attrsOfRunning, "running");
 
         buildLightMap(attrsOfWalking, "walking");
         buildSoundMap(attrsOfWalking, "walking");
@@ -50,7 +47,7 @@ public class ContextInferenceUtil {
         buildHumidityMap(attrsOfWalking, "walking");
         buildPositionMap(attrsOfWalking, "walking");
         buildMovementMap(attrsOfWalking, "walking");
-//        buildGpsMap(attrsOfWalking, "walking");
+        buildGpsMap(attrsOfWalking, "walking");
 
         buildLightMap(attrsOfIdle, "idle");
         buildSoundMap(attrsOfIdle, "idle");
@@ -58,7 +55,7 @@ public class ContextInferenceUtil {
         buildHumidityMap(attrsOfIdle, "idle");
         buildPositionMap(attrsOfIdle, "idle");
         buildMovementMap(attrsOfIdle, "idle");
-//        buildGpsMap(attrsOfIdle, "idle");
+        buildGpsMap(attrsOfIdle, "idle");
 
         buildLightMap(attrsOfResting, "resting");
         buildSoundMap(attrsOfResting, "resting");
@@ -66,7 +63,7 @@ public class ContextInferenceUtil {
         buildHumidityMap(attrsOfResting, "resting");
         buildPositionMap(attrsOfResting, "resting");
         buildMovementMap(attrsOfResting, "resting");
-//        buildGpsMap(attrsOfResting, "resting");
+        buildGpsMap(attrsOfResting, "resting");
 
         MATRIX_OF_RUNNING = (double)attrsOfRunning.size() / SIZE_OF_DATA;
         MATRIX_OF_WALKING = (double)attrsOfWalking.size() / SIZE_OF_DATA;
@@ -82,43 +79,43 @@ public class ContextInferenceUtil {
      */
     public static String inferContext(AttributeEntity attr){
         double probOfRunning =
-//                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_running") *
+                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_running") *
                 PROBABILITY_MATRIX.get("sound:" + attr.getSound() + "_running") *
-//                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_running") *
-//                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_running") *
+                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_running") *
+                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_running") *
                 PROBABILITY_MATRIX.get("position:" + attr.getPosition() + "_running") *
                 PROBABILITY_MATRIX.get("movement:" + attr.getMovement() + "_running") *
-//                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_running") *
+                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_running") *
                 MATRIX_OF_RUNNING;
 
         double probOfWalking =
-//                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_walking") *
+                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_walking") *
                 PROBABILITY_MATRIX.get("sound:" + attr.getSound() + "_walking") *
-//                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_walking") *
-//                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_walking") *
+                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_walking") *
+                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_walking") *
                 PROBABILITY_MATRIX.get("position:" + attr.getPosition() + "_walking") *
                 PROBABILITY_MATRIX.get("movement:" + attr.getMovement() + "_walking") *
-//                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_walking") *
+                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_walking") *
                 MATRIX_OF_WALKING;
 
         double probOfIdle =
-//                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_idle") *
+                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_idle") *
                 PROBABILITY_MATRIX.get("sound:" + attr.getSound() + "_idle") *
-//                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_idle") *
-//                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_idle") *
+                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_idle") *
+                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_idle") *
                 PROBABILITY_MATRIX.get("position:" + attr.getPosition() + "_idle") *
                 PROBABILITY_MATRIX.get("movement:" + attr.getMovement() + "_idle") *
-//                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_idle") *
+                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_idle") *
                 MATRIX_OF_IDLE;
 
         double probOfResting =
-//                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_resting") *
+                PROBABILITY_MATRIX.get("light:" + attr.getLight() + "_resting") *
                 PROBABILITY_MATRIX.get("sound:" + attr.getSound() + "_resting") *
-//                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_resting") *
-//                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_resting") *
+                PROBABILITY_MATRIX.get("temperature:" + attr.getTemperature() + "_resting") *
+                PROBABILITY_MATRIX.get("humidity:" + attr.getHumidity() + "_resting") *
                 PROBABILITY_MATRIX.get("position:" + attr.getPosition() + "_resting") *
                 PROBABILITY_MATRIX.get("movement:" + attr.getMovement() + "_resting") *
-//                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_resting") *
+                PROBABILITY_MATRIX.get("gps:" + attr.getGps() + "_resting") *
                 MATRIX_OF_RESTING;
 
         Map<String, Double> probsMap = new HashMap<String, Double>();

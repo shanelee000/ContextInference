@@ -1,6 +1,6 @@
-package com.shanelee.ContextInference.NaiveBayes.dao;
+package com.shanelee.ContextInference.dao;
 
-import com.shanelee.ContextInference.NaiveBayes.entity.AttributeEntity;
+import com.shanelee.ContextInference.entity.AttributeEntity;
 
 import java.util.List;
 

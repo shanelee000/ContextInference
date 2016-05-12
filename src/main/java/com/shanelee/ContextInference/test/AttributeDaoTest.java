@@ -1,9 +1,9 @@
-package com.shanelee.ContextInference.NaiveBayes.test.dao;
+package com.shanelee.ContextInference.test;
 
 import com.alibaba.fastjson.JSON;
-import com.shanelee.ContextInference.NaiveBayes.dao.AttributeDao;
-import com.shanelee.ContextInference.NaiveBayes.entity.AttributeEntity;
-import com.shanelee.ContextInference.NaiveBayes.utils.ContextInferenceUtil;
+import com.shanelee.ContextInference.dao.AttributeDao;
+import com.shanelee.ContextInference.entity.AttributeEntity;
+import com.shanelee.ContextInference.NaiveBayes.ContextInferenceUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

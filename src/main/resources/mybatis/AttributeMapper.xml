@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shanelee.ContextInference.dao.AttributeDao">
+    <resultMap id="attribute" type="com.shanelee.ContextInference.entity.AttributeEntity">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="light" property="light" jdbcType="VARCHAR"/>
+        <result column="sound" property="sound" jdbcType="VARCHAR"/>
+        <result column="temperature" property="temperature" jdbcType="VARCHAR"/>
+        <result column="humidity" property="humidity" jdbcType="VARCHAR"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="movement" property="movement" jdbcType="VARCHAR"/>
+        <result column="gps" property="gps" jdbcType="VARCHAR"/>
+        <result column="context" property="context" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryAllAttributes" resultMap="attribute">
+        SELECT * FROM attribute
+    </select>
+
+    <insert id="insert" parameterType="com.shanelee.ContextInference.entity.AttributeEntity">
+        INSERT INTO attribute
+        (light, sound, temperature, humidity, `position`, movement, gps, context)
+        VALUE
+        (#{light}, #{sound}, #{temperature}, #{humidity}, #{position}, #{movement}, #{gps})
+    </insert>
+
+</mapper>

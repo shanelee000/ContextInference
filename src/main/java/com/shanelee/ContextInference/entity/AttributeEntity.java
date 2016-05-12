@@ -1,4 +1,4 @@
-package com.shanelee.ContextInference.NaiveBayes.entity;
+package com.shanelee.ContextInference.entity;
 
 /**
  * Created by ShaneLee on 16/5/11.
