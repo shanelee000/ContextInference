@@ -1,19 +1,45 @@
 package com.shanelee.ContextInference.DecisionTree;
 
+import com.alibaba.fastjson.JSON;
 import com.shanelee.ContextInference.entity.AttributeEntity;
+import com.shanelee.ContextInference.entity.Attributes;
 import com.shanelee.ContextInference.entity.TreeEntity;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.LineInputStream;
 import org.hibernate.validator.constraints.URL;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lx on 2016/5/12.
  */
 public class ContextInferenceUtil {
+
+    /**
+     * 获取决策树
+     * @return
+     */
+    public static TreeEntity getDecisionTree(List<AttributeEntity> attrList){
+
+        //若D为同一类数据,则T为单节点树,返回该类
+        if(isAllTheSameContexts(attrList)){
+            TreeEntity treeNode = new TreeEntity();
+            treeNode.setAttrName(attrList.get(0).getContext());
+            treeNode.setAttribute(null);
+            treeNode.setChildren(null);
+            return treeNode;
+        }
+
+        //构建决策树
+        List<String> attrNames = new ArrayList<String>();
+        attrNames.add("light");
+        attrNames.add("sound");
+        attrNames.add("temperature");
+        attrNames.add("humidity");
+        attrNames.add("position");
+        attrNames.add("movement");
+//        attrNames.add("gps");
+        return buildDT(attrList,attrNames);
+    }
 
     /**
      * 计算数据集的信息熵 H(D)
@@ -83,9 +109,33 @@ public class ContextInferenceUtil {
 
     /**
      * 构造决策树
+     * @param attrList 训练集
      * @return
      */
-    private static TreeEntity buildDT(){
+    private static TreeEntity buildDT(List<AttributeEntity> attrList, List<String> attrNames){
+
+        //要返回的决策树的根节点
+        TreeEntity treeNode = new TreeEntity();
+
+        Map<String, Double> KLICMap = new HashMap<String, Double>();
+        for (String attrName : attrNames) {
+            KLICMap.put(attrName,calEntropyOfDataSet(attrList) - calConditionEntropyOfDataSet(attrList,attrName));
+        }
+
+        List<Map.Entry<String, Double>> infolds = new ArrayList<Map.Entry<String, Double>>(KLICMap.entrySet());
+        Collections.sort(infolds, new Comparator<Map.Entry<String, Double>>(){
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                if(o1.getValue() < o2.getValue()){
+                    return -1;
+                } else if(o1.getValue().equals(o2.getValue())) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        });
+        String maxKey = infolds.get(infolds.size() - 1).getKey();
+
         return null;
     }
 
@@ -264,5 +314,20 @@ public class ContextInferenceUtil {
         newListMap.put("indoor", attrOfIndoor);
         newListMap.put("outdoor", attrOfOutdoor);
         return newListMap;
+    }
+
+    /**
+     * 判断数据集是否为同一类数据
+     * @param attrList
+     * @return
+     */
+    private static boolean isAllTheSameContexts(List<AttributeEntity> attrList){
+        List<String> contextsList = new ArrayList<String>();
+        for (AttributeEntity attr : attrList) {
+            if(!contextsList.contains(attr.getContext())){
+                contextsList.add(attr.getContext());
+            }
+        }
+        return contextsList.size() == 1;
     }
 }

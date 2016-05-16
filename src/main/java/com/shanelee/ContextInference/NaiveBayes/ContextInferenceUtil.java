@@ -129,7 +129,7 @@ public class ContextInferenceUtil {
             public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
                 if (o1.getValue() < o2.getValue()) {
                     return -1;
-                } else if (o1.getValue() == o2.getValue()) {
+                } else if (o1.getValue().equals(o2.getValue())) {
                     return 0;
                 } else {
                     return 1;
