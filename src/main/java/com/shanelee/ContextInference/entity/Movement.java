@@ -3,13 +3,14 @@ package com.shanelee.ContextInference.entity;
 /**
  * Created by ShaneLee on 16/5/17.
  */
-public enum Movement {
+public enum Movement implements IAttributes{
     NOT_MOVING("not moving"),
     MOVING("moving"),
     MOVING_FAST("moving fast");
 
     private String name;
 
+    @Override
     public String getName() {
         return name;
     }

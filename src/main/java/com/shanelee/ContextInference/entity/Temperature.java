@@ -3,7 +3,7 @@ package com.shanelee.ContextInference.entity;
 /**
  * Created by ShaneLee on 16/5/17.
  */
-public enum Temperature {
+public enum Temperature implements IAttributes{
 
     VERY_HOT("very hot"),
     HOT("hot"),
@@ -14,6 +14,7 @@ public enum Temperature {
 
     private String name;
 
+    @Override
     public String getName() {
         return name;
     }

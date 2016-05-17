@@ -3,7 +3,7 @@ package com.shanelee.ContextInference.entity;
 /**
  * Created by ShaneLee on 16/5/17.
  */
-public enum Context {
+public enum Context implements IAttributes{
     RUNNING("running"),
     WALKING("walking"),
     IDLE("idle"),
@@ -11,6 +11,7 @@ public enum Context {
 
     private String name;
 
+    @Override
     public String getName() {
         return name;
     }

@@ -3,7 +3,7 @@ package com.shanelee.ContextInference.entity;
 /**
  * Created by ShaneLee on 16/5/15.
  */
-public enum Light {
+public enum Light implements IAttributes{
 
     VERY_BRIGHT("very_bright"),
     BRIGHT("bright"),
@@ -17,7 +17,9 @@ public enum Light {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.shanelee.ContextInference.NaiveBayes;
 
+import com.shanelee.ContextInference.CommonUtil;
 import com.shanelee.ContextInference.entity.AttributeEntity;
 
 import java.util.*;
@@ -124,18 +125,8 @@ public class ContextInferenceUtil {
         probsMap.put("idle", probOfIdle);
         probsMap.put("resting", probOfResting);
 
-        List<Map.Entry<String, Double>> infolds = new ArrayList<Map.Entry<String, Double>>(probsMap.entrySet());
-        Collections.sort(infolds, new Comparator<Map.Entry<String, Double>>() {
-            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-                if (o1.getValue() < o2.getValue()) {
-                    return -1;
-                } else if (o1.getValue().equals(o2.getValue())) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        });
+        List<Map.Entry<String, Double>> infolds = CommonUtil.sortMapByDoubleValue(probsMap);
+
         return infolds.get(infolds.size() - 1).getKey();
     }
 

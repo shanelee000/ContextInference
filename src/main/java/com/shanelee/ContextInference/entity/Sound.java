@@ -3,7 +3,7 @@ package com.shanelee.ContextInference.entity;
 /**
  * Created by ShaneLee on 16/5/17.
  */
-public enum Sound {
+public enum Sound implements IAttributes{
 
     VERY_LOUD("very loud"),
     LOUD("loud"),
@@ -17,6 +17,7 @@ public enum Sound {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
