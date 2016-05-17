@@ -28,17 +28,26 @@ public class ContextInferenceUtil {
             return treeNode;
         }
 
-//        //构建决策树
-//        List<String> attrNames = new ArrayList<String>();
-//        attrNames.add("light");
-//        attrNames.add("sound");
-//        attrNames.add("temperature");
-//        attrNames.add("humidity");
-//        attrNames.add("position");
-//        attrNames.add("movement");
-////        attrNames.add("gps");
-//        return buildDT(attrList,attrNames);
-        return null;
+        //构建决策树
+        List<String> attrNames = new ArrayList<String>();
+        attrNames.add("light");
+        attrNames.add("sound");
+        attrNames.add("temperature");
+        attrNames.add("humidity");
+        attrNames.add("position");
+        attrNames.add("movement");
+//        attrNames.add("gps");
+
+        TreeEntity tree = null;
+        try {
+            tree =  buildDT(attrList,attrNames);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return tree;
     }
 
     /**
@@ -66,6 +75,8 @@ public class ContextInferenceUtil {
         double entropyOfDataSet = 0;
         for (int i = 0; i < numOfSampleSetOfClazz.length; i++) {
             double temp = numOfSampleSetOfClazz[i] / sizeOfList;
+
+            // TODO: 16/5/18 p判断为0情况 
             entropyOfDataSet += temp * Math.log(temp);
         }
 
@@ -101,6 +112,8 @@ public class ContextInferenceUtil {
 
         double conditionEntropyOfDataSet = 0;
         for (Map.Entry<String, List<AttributeEntity>> entry : newListMap.entrySet()) {
+            double a = entry.getValue().size();
+            double c = calEntropyOfDataSet(entry.getValue());
             conditionEntropyOfDataSet += (entry.getValue().size() / attrList.size()) * calEntropyOfDataSet(entry.getValue());
         }
 
@@ -114,7 +127,11 @@ public class ContextInferenceUtil {
      */
     private static TreeEntity buildDT(List<AttributeEntity> attrList, List<String> attrNames) throws NoSuchFieldException, IllegalAccessException {
 
-        // TODO: 2016/5/17 判断训练集，是否为同一分类，若是则直接返回叶节点
+        if(isAllTheSameContexts(attrList)){
+            TreeEntity treeNode = new TreeEntity();
+            treeNode.setAttrName(attrList.get(0).getContext());
+            return treeNode;
+        }
 
         //要返回的决策树的根节点
         TreeEntity treeNode = new TreeEntity();
@@ -123,8 +140,10 @@ public class ContextInferenceUtil {
 
         //计算每个特征A的信息增益 g(D|A)
         Map<String, Double> KLICMap = new HashMap<String, Double>();
+        double entropy = calEntropyOfDataSet(attrList);
         for (String attrName : attrNames) {
-            KLICMap.put(attrName,calEntropyOfDataSet(attrList) - calConditionEntropyOfDataSet(attrList,attrName));
+            double cond = calConditionEntropyOfDataSet(attrList,attrName);
+            KLICMap.put(attrName,entropy - calConditionEntropyOfDataSet(attrList,attrName));
         }
 
         //取信息增益最大的特征名，作为当前节点的判断特征
@@ -137,33 +156,46 @@ public class ContextInferenceUtil {
         //剔除该特征
         attrNames.remove(maxKey);
 
-        // TODO: 2016/5/17 判断是否已经取完所有特征，即判断attrNames是否为空，若为空，则返回叶节点，否则，继续构造
-
         //获取该特征名下的所有特征枚举值
         String[] propNames = CommonUtil.getEnumPropNamesByClazzName(maxKey);
 
-        for (String propName : propNames) {
-            List<AttributeEntity> newList = new ArrayList<AttributeEntity>();
-            //取当前引导分支下的训练集
-            for (AttributeEntity attr : attrList) {
-                Field field = attr.getClass().getField(maxKey);
-                if (propName.equals(field.get(attr))) {
-                    newList.add(attr);
+        // TODO: 2016/5/17 判断是否已经取完所有特征，即判断attrNames是否为空，若为空，则返回叶节点，否则，继续构造
+        if(attrList.isEmpty()){
+            for (String propName : propNames) {
+
+                TreeEntity leafNode = new TreeEntity();
+                leafNode.setAttribute(propName);
+                for (AttributeEntity attr : attrList) {
+                    Field field = attr.getClass().getField(maxKey);
+                    if (propName.equals(field.get(attr))) {
+                        leafNode.setAttrName(attr.getContext());
+                    }
                 }
+                children.add(leafNode);
             }
+        } else {
+            for (String propName : propNames) {
+                List<AttributeEntity> newList = new ArrayList<AttributeEntity>();
+                //取当前引导分支下的训练集
+                for (AttributeEntity attr : attrList) {
+                    Field field = attr.getClass().getField(maxKey);
+                    if (propName.equals(field.get(attr))) {
+                        newList.add(attr);
+                    }
+                }
 
-
-            //获取该分支的子节点
-            TreeEntity childNode = buildDT(newList, attrNames);
-            //子节点设置上方引导属性
-            childNode.setAttribute(propName);
-            children.add(childNode);
-
+                //获取该分支的子节点
+                TreeEntity childNode = buildDT(newList, attrNames);
+                //子节点设置上方引导属性
+                childNode.setAttribute(propName);
+                children.add(childNode);
+            }
         }
 
         //设置当前结点的子节点集合
         treeNode.setChildren(children);
         return treeNode;
+
     }
 
     private static Map<String, List<AttributeEntity>> buildLightListMap(List<AttributeEntity> attrList){

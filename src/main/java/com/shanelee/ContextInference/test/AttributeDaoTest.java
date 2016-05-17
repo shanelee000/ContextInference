@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.shanelee.ContextInference.dao.AttributeDao;
 import com.shanelee.ContextInference.entity.AttributeEntity;
 import com.shanelee.ContextInference.NaiveBayes.ContextInferenceUtil;
+import com.shanelee.ContextInference.entity.TreeEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,12 @@ public class AttributeDaoTest {
         entity.setPosition("standing");
         entity.setMovement("moving");
         entity.setGps("outdoor");
-        String context = ContextInferenceUtil.inferContext(entity);
+//        String context = ContextInferenceUtil.inferContext(entity);
 //        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>" + JSON.toJSONString(ContextInferenceUtil.PROBABILITY_MATRIX));
-        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>" + context);
+//        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>" + context);
+
+        TreeEntity tree = com.shanelee.ContextInference.DecisionTree.ContextInferenceUtil.getDecisionTree(list);
+
+        System.out.println(JSON.toJSONString(tree));
     }
 }
