@@ -5,6 +5,7 @@ import com.shanelee.ContextInference.entity.AttributeEntity;
 import com.shanelee.ContextInference.entity.TreeEntity;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -45,6 +46,10 @@ public class ContextInferenceUtil {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
 
         return tree;
@@ -75,12 +80,12 @@ public class ContextInferenceUtil {
         double entropyOfDataSet = 0;
         for (int i = 0; i < numOfSampleSetOfClazz.length; i++) {
             double temp = numOfSampleSetOfClazz[i] / sizeOfList;
-
-            // TODO: 16/5/18 p判断为0情况 
-            entropyOfDataSet += temp * Math.log(temp);
+            if(temp != 0){
+                entropyOfDataSet += temp * Math.log(temp);
+            }
         }
 
-        return entropyOfDataSet;
+        return entropyOfDataSet * (-1);
      }
 
     /**
@@ -113,8 +118,10 @@ public class ContextInferenceUtil {
         double conditionEntropyOfDataSet = 0;
         for (Map.Entry<String, List<AttributeEntity>> entry : newListMap.entrySet()) {
             double a = entry.getValue().size();
-            double c = calEntropyOfDataSet(entry.getValue());
-            conditionEntropyOfDataSet += (entry.getValue().size() / attrList.size()) * calEntropyOfDataSet(entry.getValue());
+            if(a != 0){
+                double c = calEntropyOfDataSet(entry.getValue());
+                conditionEntropyOfDataSet += (a / sizeOfList) * c;
+            }
         }
 
         return conditionEntropyOfDataSet;
@@ -125,7 +132,7 @@ public class ContextInferenceUtil {
      * @param attrList 训练集
      * @return
      */
-    private static TreeEntity buildDT(List<AttributeEntity> attrList, List<String> attrNames) throws NoSuchFieldException, IllegalAccessException {
+    private static TreeEntity buildDT(List<AttributeEntity> attrList, List<String> attrNames) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         if(isAllTheSameContexts(attrList)){
             TreeEntity treeNode = new TreeEntity();
@@ -143,7 +150,7 @@ public class ContextInferenceUtil {
         double entropy = calEntropyOfDataSet(attrList);
         for (String attrName : attrNames) {
             double cond = calConditionEntropyOfDataSet(attrList,attrName);
-            KLICMap.put(attrName,entropy - calConditionEntropyOfDataSet(attrList,attrName));
+            KLICMap.put(attrName,entropy - cond);
         }
 
         //取信息增益最大的特征名，作为当前节点的判断特征
@@ -159,15 +166,20 @@ public class ContextInferenceUtil {
         //获取该特征名下的所有特征枚举值
         String[] propNames = CommonUtil.getEnumPropNamesByClazzName(maxKey);
 
+
         // TODO: 2016/5/17 判断是否已经取完所有特征，即判断attrNames是否为空，若为空，则返回叶节点，否则，继续构造
-        if(attrList.isEmpty()){
+        if(attrNames.isEmpty()){
             for (String propName : propNames) {
 
                 TreeEntity leafNode = new TreeEntity();
                 leafNode.setAttribute(propName);
                 for (AttributeEntity attr : attrList) {
-                    Field field = attr.getClass().getField(maxKey);
-                    if (propName.equals(field.get(attr))) {
+                    String methodName = "get" + maxKey.substring(0,1).toUpperCase() + maxKey.substring(1);
+                    Class c = attr.getClass();
+                    Method method = c.getMethod(methodName);
+
+                    String prop = String.valueOf(method.invoke(attr));
+                    if (propName.equals(prop)){
                         leafNode.setAttrName(attr.getContext());
                     }
                 }
@@ -178,17 +190,30 @@ public class ContextInferenceUtil {
                 List<AttributeEntity> newList = new ArrayList<AttributeEntity>();
                 //取当前引导分支下的训练集
                 for (AttributeEntity attr : attrList) {
-                    Field field = attr.getClass().getField(maxKey);
-                    if (propName.equals(field.get(attr))) {
+                    String methodName = "get" + maxKey.substring(0,1).toUpperCase() + maxKey.substring(1);
+                    Class c = attr.getClass();
+                    Method method = c.getMethod(methodName);
+                    String prop = String.valueOf(method.invoke(attr));
+                    if (propName.equals(prop)) {
                         newList.add(attr);
                     }
                 }
 
-                //获取该分支的子节点
-                TreeEntity childNode = buildDT(newList, attrNames);
-                //子节点设置上方引导属性
-                childNode.setAttribute(propName);
-                children.add(childNode);
+                //若该分支的属性分支上没有数据
+                if(newList.isEmpty()){
+                    TreeEntity childNode = new TreeEntity();
+                    childNode.setAttribute(propName);
+                    childNode.setAttrName("未知");
+                    children.add(childNode);
+                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
+                } else {
+                    //获取该分支的子节点
+                    TreeEntity childNode = buildDT(newList, attrNames);
+                    //子节点设置上方引导属性
+                    childNode.setAttribute(propName);
+                    children.add(childNode);
+                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
+                }
             }
         }
 

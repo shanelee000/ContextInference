@@ -5,7 +5,7 @@ package com.shanelee.ContextInference.entity;
  */
 public enum Light implements IAttributes{
 
-    VERY_BRIGHT("very_bright"),
+    VERY_BRIGHT("very bright"),
     BRIGHT("bright"),
     NORMAL("normal"),
     DARK("dark"),
