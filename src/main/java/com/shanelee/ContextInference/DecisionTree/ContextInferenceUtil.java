@@ -15,6 +15,43 @@ import java.util.*;
 public class ContextInferenceUtil {
 
     /**
+     * 上下文分析
+     * @param tree 给定的决策树模型
+     * @param attr 给定的上下文
+     * @return
+     */
+    public static String inferContext(TreeEntity tree, AttributeEntity attr) {
+
+        String context = null;
+
+        if (tree.getChildren() != null && tree.getChildren().size() > 0){
+            String methodName = "get" + tree.getAttrName().substring(0,1).toUpperCase() + tree.getAttrName().substring(1);
+            Class c = attr.getClass();
+            try {
+                Method method = c.getMethod(methodName);
+                String prop = String.valueOf(method.invoke(attr));
+                for (TreeEntity child : tree.getChildren()) {
+                    if (child.getAttribute().equals(prop)) {
+                        context = inferContext(child, attr);
+                    }
+                }
+
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            context = tree.getAttrName();
+        }
+
+        return context;
+    }
+
+    /**
      * 获取决策树
      * @return
      */
@@ -208,6 +245,7 @@ public class ContextInferenceUtil {
                     System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
                 } else {
                     //获取该分支的子节点
+                    //递归调用
                     TreeEntity childNode = buildDT(newList, attrNames);
                     //子节点设置上方引导属性
                     childNode.setAttribute(propName);

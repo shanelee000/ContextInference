@@ -31,16 +31,22 @@ public class AttributeDaoTest {
         entity.setLight("very bright");
         entity.setSound("normal");
         entity.setTemperature("normal");
-        entity.setHumidity("high");
+        entity.setHumidity("medium");
         entity.setPosition("standing");
-        entity.setMovement("moving");
+        entity.setMovement("not moving");
         entity.setGps("outdoor");
+
+        //测试贝叶斯
 //        String context = ContextInferenceUtil.inferContext(entity);
 //        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>" + JSON.toJSONString(ContextInferenceUtil.PROBABILITY_MATRIX));
 //        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>" + context);
 
-        TreeEntity tree = com.shanelee.ContextInference.DecisionTree.ContextInferenceUtil.getDecisionTree(list);
+        //测试构造决策树
+//        TreeEntity tree = com.shanelee.ContextInference.DecisionTree.ContextInferenceUtil.getDecisionTree(list);
+//        System.out.println(JSON.toJSONString(tree));
 
-        System.out.println(JSON.toJSONString(tree));
+        //测试决策树
+//        String context = com.shanelee.ContextInference.DecisionTree.ContextInferenceUtil.inferContext(com.shanelee.ContextInference.DecisionTree.ContextInferenceUtil.getDecisionTree(list), entity);
+//        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + context);
     }
 }
