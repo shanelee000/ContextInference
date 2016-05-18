@@ -32,6 +32,7 @@ public class ContextInferenceUtil {
                 String prop = String.valueOf(method.invoke(attr));
                 for (TreeEntity child : tree.getChildren()) {
                     if (child.getAttribute().equals(prop)) {
+                        //递归遍历
                         context = inferContext(child, attr);
                     }
                 }
@@ -54,7 +55,7 @@ public class ContextInferenceUtil {
     /**
      * 获取决策树
      * @return
-     */
+     */ 
     public static TreeEntity getDecisionTree(List<AttributeEntity> attrList){
 
         //若D为同一类数据,则T为单节点树,返回该类
