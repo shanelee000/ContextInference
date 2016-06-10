@@ -1,6 +1,7 @@
 package com.shanelee.ContextInference.dao;
 
 import com.shanelee.ContextInference.entity.AttributeEntity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,5 +15,15 @@ public interface AttributeDao {
      * @return
      */
     List<AttributeEntity> queryAllAttributes();
+
+    /**
+     * 获取用于计算准确率的数据
+     * @return
+     */
+    List<AttributeEntity> queryTestDatas();
+
+    int insert(AttributeEntity attr);
+
+    int insertBatch(@Param("list") List<AttributeEntity> list);
 
 }

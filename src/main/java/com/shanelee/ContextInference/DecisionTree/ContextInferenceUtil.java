@@ -4,14 +4,10 @@ import com.shanelee.ContextInference.CommonUtil;
 import com.shanelee.ContextInference.entity.AttributeEntity;
 import com.shanelee.ContextInference.entity.TreeEntity;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- * Created by lx on 2016/5/12.
- */
 public class ContextInferenceUtil {
 
     /**
@@ -36,7 +32,6 @@ public class ContextInferenceUtil {
                         context = inferContext(child, attr);
                     }
                 }
-
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
@@ -44,18 +39,16 @@ public class ContextInferenceUtil {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-
         } else {
             context = tree.getAttrName();
         }
-
         return context;
     }
 
     /**
      * 获取决策树
      * @return
-     */ 
+     */
     public static TreeEntity getDecisionTree(List<AttributeEntity> attrList){
 
         //若D为同一类数据,则T为单节点树,返回该类
@@ -75,7 +68,8 @@ public class ContextInferenceUtil {
         attrNames.add("humidity");
         attrNames.add("position");
         attrNames.add("movement");
-//        attrNames.add("gps");
+        attrNames.add("gps");
+        attrNames.add("time");
 
         TreeEntity tree = null;
         try {
@@ -90,7 +84,31 @@ public class ContextInferenceUtil {
             e.printStackTrace();
         }
 
+        System.out.println();
         return tree;
+    }
+
+    /**
+     * 计算正确率
+     * @param attrList
+     * @return
+     */
+    public static double calCorrectProb(TreeEntity tree, List<AttributeEntity> attrList){
+
+        int sizeOfList = attrList.size();
+        int correctNum = 0;
+        int wrongNum = 0;
+
+        for (AttributeEntity attr : attrList){
+            if(attr.getContext().equals(inferContext(tree, attr))){
+                correctNum++;
+            }else{
+                wrongNum++;
+            }
+        }
+        System.out.println("正确推理：" + correctNum);
+        System.out.println("错误推理：" + wrongNum);
+        return (double)correctNum / sizeOfList;
     }
 
     /**
@@ -124,7 +142,7 @@ public class ContextInferenceUtil {
         }
 
         return entropyOfDataSet * (-1);
-     }
+    }
 
     /**
      * 计算特征A对数据集D的条件熵 H(D|A)
@@ -151,6 +169,8 @@ public class ContextInferenceUtil {
             newListMap = buildMovementListMap(attrList);
         } else if("gps".equals(featureName)) {
             newListMap = buildGpsListMap(attrList);
+        } else if("time".equals(featureName)) {
+            newListMap = buildTimeListMap(attrList);
         }
 
         double conditionEntropyOfDataSet = 0;
@@ -204,7 +224,6 @@ public class ContextInferenceUtil {
         //获取该特征名下的所有特征枚举值
         String[] propNames = CommonUtil.getEnumPropNamesByClazzName(maxKey);
 
-
         // TODO: 2016/5/17 判断是否已经取完所有特征，即判断attrNames是否为空，若为空，则返回叶节点，否则，继续构造
         if(attrNames.isEmpty()){
             for (String propName : propNames) {
@@ -243,15 +262,15 @@ public class ContextInferenceUtil {
                     childNode.setAttribute(propName);
                     childNode.setAttrName("未知");
                     children.add(childNode);
-                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
+//                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
                 } else {
                     //获取该分支的子节点
                     //递归调用
-                    TreeEntity childNode = buildDT(newList, attrNames);
+                    TreeEntity childNode = buildDT(newList, new ArrayList<String>(attrNames));
                     //子节点设置上方引导属性
                     childNode.setAttribute(propName);
                     children.add(childNode);
-                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
+//                    System.out.println("设置节点：" + childNode.getAttribute() + "_" + childNode.getAttrName());
                 }
             }
         }
@@ -436,6 +455,27 @@ public class ContextInferenceUtil {
 
         newListMap.put("indoor", attrOfIndoor);
         newListMap.put("outdoor", attrOfOutdoor);
+        return newListMap;
+    }
+
+    private static Map<String, List<AttributeEntity>> buildTimeListMap(List<AttributeEntity> attrList){
+        Map<String, List<AttributeEntity>> newListMap = new HashMap<String, List<AttributeEntity>>();
+        List<AttributeEntity> attrOfMorning = new ArrayList<AttributeEntity>();
+        List<AttributeEntity> attrOfAfternoon = new ArrayList<AttributeEntity>();
+        List<AttributeEntity> attrOfNight = new ArrayList<AttributeEntity>();
+
+        for (AttributeEntity attr : attrList) {
+            if("morning".equals(attr.getTime())){
+                attrOfMorning.add(attr);
+            } else if ("afternoon".equals(attr.getTime())){
+                attrOfAfternoon.add(attr);
+            } else if ("night".equals(attr.getTime())){
+                attrOfNight.add(attr);
+            }
+        }
+        newListMap.put("morning", attrOfMorning);
+        newListMap.put("afternoon", attrOfAfternoon);
+        newListMap.put("night", attrOfNight);
         return newListMap;
     }
 

@@ -14,14 +14,27 @@
     </resultMap>
 
     <select id="queryAllAttributes" resultMap="attribute">
-        SELECT * FROM attribute
+        SELECT * FROM attribute WHERE <![CDATA[ id <= 8100]]>
     </select>
 
     <insert id="insert" parameterType="com.shanelee.ContextInference.entity.AttributeEntity">
         INSERT INTO attribute
-        (light, sound, temperature, humidity, `position`, movement, gps, context)
+        (light, sound, temperature, humidity, `position`, movement, gps, `time`, context)
         VALUE
-        (#{light}, #{sound}, #{temperature}, #{humidity}, #{position}, #{movement}, #{gps})
+        (#{light}, #{sound}, #{temperature}, #{humidity}, #{position}, #{movement}, #{gps}, #{time}, #{context})
+    </insert>
+
+    <select id="queryTestDatas" resultMap="attribute">
+        SELECT * FROM attribute WHERE <![CDATA[ id > 8100]]>
+    </select>
+
+    <insert id="insertBatch">
+        INSERT INTO attribute
+        (light, sound, temperature, humidity, `position`, movement, gps, `time`, context)
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.light}, #{item.sound}, #{item.temperature}, #{item.humidity}, #{item.position}, #{item.movement}, #{item.gps}, #{item.time}, #{item.context})
+        </foreach>
     </insert>
 
 </mapper>

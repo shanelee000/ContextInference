@@ -11,6 +11,11 @@ import java.util.*;
  */
 public class CommonUtil {
 
+    /**
+     * 根据map的value中的double值大小给map排序
+     * @param map 传入的map参数
+     * @return
+     */
     public static List<Map.Entry<String, Double>> sortMapByDoubleValue(Map<String, Double> map){
         List<Map.Entry<String, Double>> infolds = new ArrayList<Map.Entry<String, Double>>(map.entrySet());
         Collections.sort(infolds, new Comparator<Map.Entry<String, Double>>(){
@@ -27,8 +32,15 @@ public class CommonUtil {
         return infolds;
     }
 
+    /**
+     * 根据枚举类的名称获取对应枚举类中的枚举值
+     * @param name 类名
+     * @return
+     */
     public static String[] getEnumPropNamesByClazzName(String name){
-        String fullPackageUrl = "com.shanelee.ContextInference.entity." + name.trim().substring(0,1).toUpperCase() + name.trim().substring(1).toLowerCase();
+        String fullPackageUrl = "com.shanelee.ContextInference.entity." +
+                name.trim().substring(0,1).toUpperCase() +
+                name.trim().substring(1).toLowerCase();
         Class<?> c = null;
         try {
             c = Class.forName(fullPackageUrl);
@@ -42,13 +54,5 @@ public class CommonUtil {
         }
         return propNames;
     }
-
-//    public static void main(String[] args) {
-//        String light = "humidity";
-//
-//        String[] strs = getEnumPropNamesByClazzName(light);
-//        System.out.println(JSON.toJSONString(strs));
-//
-//    }
 
 }
